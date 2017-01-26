@@ -1,0 +1,41 @@
+{
+  "name": "node-cauca",
+  "version": "0.1.0",
+  "description": "법원경매 API(Court AUCtion Api)",
+  "main": "app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development nodemon server/src/app.js --exec babel-node",
+    "scrap": "cross-env NODE_ENV=development nodemon server/src/scrap.js --exec babel-node",
+    "test": "cross-env NODE_ENV=development mocha -t 3000 --require babel-register --require babel-polyfill server/tests"
+  },
+  "author": "yoiyoy",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "cheerio": "^0.22.0",
+    "co": "^4.6.0",
+    "co-request": "^1.0.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "httperrors": "^2.1.0",
+    "i": "^0.3.5",
+    "iconv-lite": "^0.4.15",
+    "mongoose": "^4.7.7",
+    "mongoose-auto-increment": "^5.0.1",
+    "morgan": "^1.7.0",
+    "npm": "^4.1.1",
+    "request": "^2.79.0",
+    "url-parse": "^1.1.7"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-core": "^6.22.1",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-stage-0": "^6.22.0",
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "cross-env": "^3.1.4",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0"
+  }
+}
