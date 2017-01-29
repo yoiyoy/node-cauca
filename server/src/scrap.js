@@ -9,11 +9,11 @@ import { itemList } from './props/requestOptions';
 import sidoList  from './props/sidoList';
 
 const getItems = sidoList => co(function* () {
-  let items = yield sidoList.reduce((items, sido) => [...items, getSidoItemsList(sido.code)], []);
+  let items = yield sidoList.reduce((items, sido) => [...items, getSidoItems(sido.code)], []);
   return items;
 });
 
-const getSidoItemsList = sidoCode => co(function* () {
+const getSidoItems = sidoCode => co(function* () {
   let sidoItemList = { ...itemList,
     form: {
       ...itemList.form,
@@ -23,7 +23,6 @@ const getSidoItemsList = sidoCode => co(function* () {
       "mDaepyoSiguCd": "",
     }
   };
-  console.log(sidoItemList)
   let result = yield request(sidoItemList);
   let response = result;
   let bodyBuffer = result.body;
