@@ -1,80 +1,78 @@
-// import itemParser from './itemParser';
-
-const itemParser = $ => {
-  const colToProps = (props, col, i) => {
-    let innerText = $(col).innerText();
+const itemParser = ($) => {
+  const propReducer = (props, col, i) => {
+    const innerText = $(col).innerText();
     switch (i) {
-      case 1:
-        let caseDesc, court, caseNo;
-        [court, caseNo] = caseDesc = innerText.split('\n')
+      case 1: {
+        let caseDesc;
+        const [court, caseNo] = caseDesc = innerText.split('\n');
         return { ...props,
           court,
           caseNo,
-          caseDesc: caseDesc.join(' ')
+          caseDesc: caseDesc.join(' '),
         };
-
-      case 2:
-        let [itemNo, ...itemType] = innerText.split('\n')
-        return{ ...props,
+      }
+      case 2: {
+        const [itemNo, ...itemType] = innerText.split('\n');
+        return { ...props,
           itemNo,
-          itemType: itemType.join(' ')
+          itemType: itemType.join(' '),
         };
-
-      case 3:
-        let [desc] = $(col).find('div').get()
+      }
+      case 3: {
+        const [desc] = $(col).find('div').get()
           .map(e => $(e).innerText());
-        let [addr, itemDesc] = desc.split('\n')
-        let [addr0, addr1, addr2] = addr
-          .replace(/^.+(?=\:):\s+?/, '') // "사용본거지 : " 텍스트 제거
+        const [addr, itemDesc] = desc.split('\n');
+        const [addr0, addr1, addr2] = addr
+          .replace(/^.+(?=:):\s+?/, '') // "사용본거지 : " 텍스트 제거
           .split(/ +/);
         return { ...props,
-          itemDesc: itemDesc.replace(/[\[\]]/g, ''),
+          itemDesc: itemDesc.replace(/[[]]/g, ''),
           addr,
           addr0,
           addr1,
-          addr2
+          addr2,
         };
-
-      case 4:
-        let note = innerText;
+      }
+      case 4: {
+        const note = innerText;
         return { ...props,
-          note
+          note,
         };
-
-      case 5:
-        let [appraisalPrice, reservedPrice] = $(col).find('div').get()
+      }
+      case 5: {
+        const [appraisalPrice, reservedPrice] = $(col).find('div').get()
           .map(e => $(e).innerText())
           .map(formatted => formatted.replace(/,|\n.+$/g, ''))
-          .map(price => parseInt(price));
+          .map(price => parseInt(price, 10));
         return { ...props,
           appraisalPrice,
-          reservedPrice
+          reservedPrice,
         };
-
-      case 6:
-        let [auctioninfo, status] = $(col).find('div').get()
+      }
+      case 6: {
+        const [auctioninfo, status] = $(col).find('div').get()
           .map(e => $(e).innerText());
-        let [auctionDept] = auctioninfo.split('\n');
-        let [_, auctionDeptContact, auctionDate, auctionRoom] = $(col).find('div a')
+        const [auctionDept] = auctioninfo.split('\n');
+        const [auctionDeptContact, auctionDate, auctionRoom] = $(col).find('div a')
           .attr('onclick')
           .replace(/[ \t]+/g, ' ')
-          .match(/'([^']+)', '([^']+)', '([^']+)'/);
+          .match(/'([^']+)', '([^']+)', '([^']+)'/)
+          .slice(1);
         return { ...props,
           status,
           auctionDept,
           auctionDeptContact,
           auctionDate,
-          auctionRoom
+          auctionRoom,
         };
-
-      default:
-        return props;
+      }
+      default: return props;
     }
   };
 
-  return item => $(item).find('td').get().reduce(colToProps, {});
+  return item => $(item).find('td').get().reduce(propReducer, {});
 };
 
 export default $ => ({
-  itemParser: itemParser($)
+  itemParser: itemParser($),
 });
