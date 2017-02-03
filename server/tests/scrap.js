@@ -1,7 +1,7 @@
 /* eslint-env  mocha */
 import chai from 'chai';
 import scrap from '../src/scrap';
-import sidos from '../src/props/sidoList.json';
+import addrCode from '../src/props/addrCode.json';
 
 const expect = chai.expect;
 const handleErr = (err, done, cb) => {
@@ -27,7 +27,7 @@ describe('SCRAP', () => {
     });
 
     it('should have items per sido', (done) => {
-      sidos.forEach((sido, i) => {
+      addrCode.sidos.forEach((sido, i) => {
         expect(scrappedItems[i]).to.have.property('sidoName')
         .that.is.a('string')
         .that.is.equals(sido.name);

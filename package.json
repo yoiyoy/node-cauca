@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development nodemon server/src/app.js --exec babel-node",
-    "scrap": "cross-env NODE_ENV=development nodemon server/src/scrap.js --exec babel-node",
-    "test": "cross-env NODE_ENV=development mocha -t 10000 --require babel-register --require babel-polyfill server/tests",
+    "scrap": "cross-env NODE_ENV=development babel-node server/src/scrap.js",
+    "test": "cross-env NODE_ENV=development mocha -t 100000 --require babel-register --require babel-polyfill server/tests",
     "lint": "eslint -c .eslintrc server/src server/tests"
   },
   "author": "yoiyoy",
@@ -18,6 +18,7 @@
     "cheerio": "^0.22.0",
     "co": "^4.6.0",
     "co-request": "^1.0.0",
+    "co-wait": "0.0.0",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "httperrors": "^2.1.0",
