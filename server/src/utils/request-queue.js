@@ -2,10 +2,20 @@ import co from 'co';
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export default (sendFunc, {
-  minInterval = 5000,
-  asyncWithInterval = true,
-}) => {
+const ensureInterval = (lastProcessFrom, interval) => co(function* () {
+  const now = Date.now();
+  const nextProcessTime = interval + lastProcessFrom;
+  const intervalLeft = nextProcessTime - now;
+  // normalize min ms for setTimeout
+  if (intervalLeft > 10) {
+    yield wait(intervalLeft);
+  } else if (intervalLeft > 0) {
+    yield wait(10);
+  }
+  yield Promise.resolve();
+});
+
+export default (send, { asyncMode = true, interval = 5000 }) => {
   const state = {
     $$processing: false,
     $$lastProcessFrom: 0,
@@ -26,14 +36,6 @@ export default (sendFunc, {
 
   const waitings = []; // queue
 
-  const ensureInterval = (lastProcessFrom, interval) => co(function* () {
-    const now = Date.now();
-    const nextProcessTime = interval + lastProcessFrom;
-    let intervalLeft = nextProcessTime - now;
-    intervalLeft = intervalLeft < 10 ? 10 : intervalLeft; // normalize min ms for setTimeout
-    yield wait(intervalLeft);
-  });
-
   const deferRequest = () => new Promise(resolve => waitings.push(resolve));
 
   const resolveNextRequest = () => {
@@ -48,14 +50,14 @@ export default (sendFunc, {
       yield deferRequest();
     }
     state.pick();
-    yield ensureInterval(state.lastProcessFrom, minInterval);
+    yield ensureInterval(state.lastProcessFrom, interval);
 
-    if (asyncWithInterval) {
+    if (asyncMode) {
       state.free();
       resolveNextRequest();
-      result = yield sendFunc(...args);
+      result = yield send(...args);
     } else {
-      result = yield sendFunc(...args);
+      result = yield send(...args);
       state.free();
       resolveNextRequest();
     }
@@ -63,7 +65,6 @@ export default (sendFunc, {
   });
 
   return {
-    send: process,
-    sendImmed: sendFunc,
+    push: process,
   };
 };
