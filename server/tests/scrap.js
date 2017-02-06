@@ -1,42 +1,54 @@
 /* eslint-env  mocha */
 import chai from 'chai';
-import scrap from '../src/scrap';
+
+import { getSidoSigus, getItems } from '../src/scrap';
 import addrCode from '../src/props/addrCode.json';
 
 const expect = chai.expect;
-const handleErr = (err, done, cb) => {
-  if (!err && cb) cb();
-  done(err);
-};
 
-describe('SCRAP', () => {
-  let scrappedItems;
-  beforeEach((done) => {
-    scrap
-      .then((items) => {
-        scrappedItems = items;
-        done();
-      })
-      .catch(err => handleErr(err, done));
+describe('scrap', () => {
+  it('gets sido-sigu codes ', function* () {
+    const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 3));
+    expect(sidoSigus).to.be.an('array');
+    sidoSigus.every(sido =>
+      expect(sido).to.have.property('name').that.exist &&
+      expect(sido).to.have.property('code').that.exist &&
+      expect(sido).to.have.property('sigus').that.is.an('array') &&
+      sido.sigus.every(sigu =>
+        expect(sigu).to.have.property('name').that.exist &&
+        expect(sigu).to.have.property('code').that.exist));
   });
 
-  describe('scrapped item', () => {
-    it('should be a array', (done) => {
-      expect(scrappedItems).to.be.a('array');
-      done();
-    });
-
-    it('should have items per sido', (done) => {
-      addrCode.sidos.forEach((sido, i) => {
-        expect(scrappedItems[i]).to.have.property('sidoName')
-        .that.is.a('string')
-        .that.is.equals(sido.name);
-
-        expect(scrappedItems[i]).to.have.property('sidoCode')
-        .that.is.a('number')
-        .that.is.equals(sido.code);
-      });
-      done();
-    });
+  it('gets auction items per sido-sigu', function* () {
+    const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 4));
+    const sidoSiguItems = yield getItems(sidoSigus.slice(1, 2));
+    const itemKeys = [
+      'court',
+      'caseNo',
+      'caseDesc',
+      'itemNo',
+      'itemType',
+      'itemDesc',
+      'addr',
+      'addr0',
+      'addr1',
+      'addr2',
+      'note',
+      'appraisalPrice',
+      'reservedPrice',
+      'status',
+      'auctionDept',
+      'auctionDeptContact',
+      'auctionDate',
+    ];
+    sidoSiguItems.every(sidoSiguItem =>
+      expect(sidoSiguItem).to.have.property('sidoName').that.exist &&
+      expect(sidoSiguItem).to.have.property('sidoCode').that.exist &&
+      expect(sidoSiguItem).to.have.property('siguName').that.exist &&
+      expect(sidoSiguItem).to.have.property('siguCode').that.exist &&
+      expect(sidoSiguItem).to.have.property('items').that.is.an('array') &&
+      sidoSiguItem.items.every(item =>
+        itemKeys.every(key =>
+          expect(item).to.have.property(key).that.exist)));
   });
 });
