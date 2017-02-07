@@ -2,6 +2,12 @@ const itemParser = ($) => {
   const propReducer = (props, col, i) => {
     const innerText = $(col).innerText();
     switch (i) {
+      case 0: {
+        const [, caseId] = $(col).find('input').attr('value').split(',');
+        return { ...props,
+          caseId,
+        };
+      }
       case 1: {
         let caseDesc;
         const [court, caseNo] = caseDesc = innerText.split('\n');
@@ -22,16 +28,19 @@ const itemParser = ($) => {
         const [desc] = $(col).find('div').get()
           .map(e => $(e).innerText());
         const [addr, itemDesc] = desc.split('\n');
-        const [addr0, addr1, addr2] = addr
+        const [addr0, addr1, addr2, ...addr3] = addr
           .replace(/^.+(?=:):\s+?/, '') // "사용본거지 : " 텍스트 제거
           .split(/ +/);
+        /* eslint-disable no-useless-escape */
         return { ...props,
-          itemDesc: itemDesc.replace(/[[]]/g, ''),
+          itemDesc: itemDesc.replace(/[\[\]]/g, ''),
           addr,
           addr0,
           addr1,
           addr2,
+          addr3: addr3.join(' '),
         };
+        /* eslint-enable no-useless-escape */
       }
       case 4: {
         const note = innerText;
