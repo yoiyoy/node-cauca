@@ -69,7 +69,7 @@ const getSidoSiguItems = (sidoCode, siguCode) => co(function* () {
   return sidoItems;
 });
 
-const getItems = sidoSigus => co(function* () {
+const getSidoSiguAuctions = sidoSigus => co(function* () {
   const items = yield sidoSigus.reduce((sidosiguItems, sido) =>
     [...sidosiguItems,
       ...sido.sigus.map(sigu => ({
@@ -85,8 +85,8 @@ const getItems = sidoSigus => co(function* () {
 
 export default () => co(function* () {
   const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 4));
-  const items = yield getItems(sidoSigus.slice(1, 2));
-  return items;
+  const SidoSiguAuctions = yield getSidoSiguAuctions(sidoSigus.slice(1, 2));
+  return SidoSiguAuctions;
 }).catch(e => console.error(e));
 
-export { getSidoSigus, getItems };
+export { getSidoSigus, getSidoSiguAuctions };

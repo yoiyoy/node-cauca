@@ -1,7 +1,7 @@
 /* eslint-env  mocha */
 import chai from 'chai';
 
-import { getSidoSigus, getItems } from '../src/scrap';
+import { getSidoSigus, getSidoSiguAuctions } from '../src/scrap';
 import addrCode from '../src/props/addrCode.json';
 
 const expect = chai.expect;
@@ -21,7 +21,7 @@ describe('scrap', () => {
 
   it('gets auction items per sido-sigu', function* () {
     const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 4));
-    const sidoSiguItems = yield getItems(sidoSigus.slice(1, 2));
+    const sidoSiguAuctions = yield getSidoSiguAuctions(sidoSigus.slice(1, 2));
     const itemKeys = [
       'court',
       'caseNo',
@@ -41,13 +41,13 @@ describe('scrap', () => {
       'auctionDeptContact',
       'auctionDate',
     ];
-    sidoSiguItems.every(sidoSiguItem =>
-      expect(sidoSiguItem).to.have.property('sidoName').that.exist &&
-      expect(sidoSiguItem).to.have.property('sidoCode').that.exist &&
-      expect(sidoSiguItem).to.have.property('siguName').that.exist &&
-      expect(sidoSiguItem).to.have.property('siguCode').that.exist &&
-      expect(sidoSiguItem).to.have.property('items').that.is.an('array') &&
-      sidoSiguItem.items.every(item =>
+    sidoSiguAuctions.every(sidoSiguAuction =>
+      expect(sidoSiguAuction).to.have.property('sidoName').that.exist &&
+      expect(sidoSiguAuction).to.have.property('sidoCode').that.exist &&
+      expect(sidoSiguAuction).to.have.property('siguName').that.exist &&
+      expect(sidoSiguAuction).to.have.property('siguCode').that.exist &&
+      expect(sidoSiguAuction).to.have.property('items').that.is.an('array') &&
+      sidoSiguAuction.items.every(item =>
         itemKeys.every(key =>
           expect(item).to.have.property(key).that.exist)));
   });
