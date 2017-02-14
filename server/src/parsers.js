@@ -1,3 +1,9 @@
+const siguParser = $ =>
+  siguNode => ({
+    name: $(siguNode).html().match(/[가-힇]+/g).pop(),
+    code: $(siguNode).attr('value'),
+  });
+
 const itemParser = ($) => {
   const propReducer = (props, col, i) => {
     const innerText = $(col).innerText();
@@ -82,14 +88,20 @@ const itemParser = ($) => {
   return item => $(item).find('td').get().reduce(propReducer, {});
 };
 
-const siguParser = $ =>
-  siguNode => ({
-    name: $(siguNode).html().match(/[가-힇]+/g).pop(),
-    code: $(siguNode).attr('value'),
-  });
-
+const nextTargetRowParser = $ =>
+  (pagination) => {
+    const nextPagination = $(pagination).find('.page_on + a').get(0);
+    if (!nextPagination) {
+      return null;
+    }
+    /* eslint-disable no-useless-escape */
+    const [, nextTargetRow] = $(nextPagination).attr('onclick').match(/\(\'([0-9]+)/);
+    /* eslint-enable no-useless-escape */
+    return parseInt(nextTargetRow, 10);
+  };
 
 export default $ => ({
-  itemParser: itemParser($),
   siguParser: siguParser($),
+  itemParser: itemParser($),
+  nextTargetRowParser: nextTargetRowParser($),
 });

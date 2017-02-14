@@ -51,7 +51,7 @@ const getSidoSigus = sidos =>
     };
   }));
 
-const getSidoSiguItems = (sidoCode, siguCode) => co(function* () {
+const getSidoSiguItems = (sidoCode, siguCode, targetRow = 1) => co(function* () {
   const sidoItemsRequest = { ...itemsRequest,
     form: {
       ...itemsRequest.form,
@@ -59,12 +59,18 @@ const getSidoSiguItems = (sidoCode, siguCode) => co(function* () {
       daepyoSiguCd: siguCode,
       mDaepyoSidoCd: sidoCode,
       mDaepyoSiguCd: siguCode,
+      targetRow,
     },
     encoding: null,
   };
   const $ = yield requestQ.push(sidoItemsRequest);
-  const { itemParser } = parsers($);
+  const { itemParser, nextTargetRowParser } = parsers($);
   const sidoItems = $('.Ltbl_list tbody tr').get().map(itemParser);
+  const nextTargetRow = nextTargetRowParser($('.page2').get());
+  if (nextTargetRow !== null) {
+    const nextPageItems = yield getSidoSiguItems(sidoCode, siguCode, nextTargetRow);
+    return [...sidoItems, ...nextPageItems];
+  }
   // console.log(sidoItems);
   return sidoItems;
 });
@@ -85,8 +91,8 @@ const getSidoSiguAuctions = sidoSigus => co(function* () {
 
 export default () => co(function* () {
   const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 4));
-  const SidoSiguAuctions = yield getSidoSiguAuctions(sidoSigus.slice(1, 2));
-  return SidoSiguAuctions;
+  const sidoSiguAuctions = yield getSidoSiguAuctions(sidoSigus.slice(1, 2));
+  return sidoSiguAuctions;
 }).catch(e => console.error(e));
 
 export { getSidoSigus, getSidoSiguAuctions };

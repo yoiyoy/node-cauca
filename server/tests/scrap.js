@@ -20,35 +20,32 @@ describe('scrap', () => {
   });
 
   it('gets auction items per sido-sigu', function* () {
-    const sidoSigus = yield getSidoSigus(addrCode.sidos.slice(1, 4));
-    const sidoSiguAuctions = yield getSidoSiguAuctions(sidoSigus.slice(1, 2));
-    const itemKeys = [
-      'court',
-      'caseNo',
-      'caseDesc',
-      'itemNo',
-      'itemType',
-      'itemDesc',
-      'addr',
-      'addr0',
-      'addr1',
-      'addr2',
-      'note',
-      'appraisalPrice',
-      'reservedPrice',
-      'status',
-      'auctionDept',
-      'auctionDeptContact',
-      'auctionDate',
-    ];
+    const someSidoSigus = [{
+      name: '서울특별시',
+      code: '11',
+      sigus: [{
+        name: '강남구',
+        code: '680',
+      }, {
+        name: '강동구',
+        code: '740',
+      }, {
+        name: '강북구',
+        code: '300',
+      }, {
+        name: '강서구',
+        code: '500',
+      }, {
+        name: '관악구',
+        code: '620',
+      }],
+    }];
+    const sidoSiguAuctions = yield getSidoSiguAuctions(someSidoSigus);
     sidoSiguAuctions.every(sidoSiguAuction =>
       expect(sidoSiguAuction).to.have.property('sidoName').that.exist &&
       expect(sidoSiguAuction).to.have.property('sidoCode').that.exist &&
       expect(sidoSiguAuction).to.have.property('siguName').that.exist &&
       expect(sidoSiguAuction).to.have.property('siguCode').that.exist &&
-      expect(sidoSiguAuction).to.have.property('items').that.is.an('array') &&
-      sidoSiguAuction.items.every(item =>
-        itemKeys.every(key =>
-          expect(item).to.have.property(key).that.exist)));
+      expect(sidoSiguAuction).to.have.property('items').that.is.an('array'));
   });
 });

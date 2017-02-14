@@ -3,8 +3,9 @@ import chai from 'chai';
 import cheerio from 'cheerio';
 
 import parsers from '../src/parsers';
-import auctionItemTempl from '../src/auctionItem.template';
 import siguTempl from '../src/sigu.template';
+import auctionItemTempl from '../src/auctionItem.template';
+import paginationTempl from '../src/pagination.template';
 import cheerioInnerText from '../src/utils/cheerio-innerText';
 
 const expect = chai.expect;
@@ -35,10 +36,23 @@ const siguProps = {
   code: '123',
 };
 
+const targetRowProps = {
+  nextTargetRow: 41,
+};
+
 cheerioInnerText(cheerio);
 
 describe('parsers', () => {
-  it('parses auction item from html', (done) => {
+  it('parses name and code of sigu from "option"', (done) => {
+    const body = siguTempl(siguProps);
+    const $ = cheerio.load(body, { decodeEntities: false });
+    const { siguParser } = parsers($);
+    const sigu = $('xsync > select > option:not([value=""])').get().map(siguParser).pop();
+    expect(sigu).to.eql(siguProps);
+    done();
+  });
+
+  it('parses auction item from "tr"', (done) => {
     const body = auctionItemTempl(itemProps);
     const $ = cheerio.load(body, { decodeEntities: false });
     const { itemParser } = parsers($);
@@ -47,12 +61,12 @@ describe('parsers', () => {
     done();
   });
 
-  it('parses name and code of sigu from xml', (done) => {
-    const body = siguTempl(siguProps);
+  it('parses next targetRow from ".page2"', (done) => {
+    const body = paginationTempl(targetRowProps);
     const $ = cheerio.load(body, { decodeEntities: false });
-    const { siguParser } = parsers($);
-    const sigu = $('xsync > select > option:not([value=""])').get().map(siguParser).pop();
-    expect(sigu).to.eql(siguProps);
+    const { nextTargetRowParser } = parsers($);
+    const nextTargetRow = nextTargetRowParser($('.page2').get());
+    expect(nextTargetRow).to.eql(targetRowProps.nextTargetRow);
     done();
   });
 });
